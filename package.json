@@ -1,0 +1,21 @@
+{
+  "name": "movie-app-with-react-graphql",
+  "version": "1.0.0",
+  "description": "Movie App v2 (with React and GraphQl)",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Rukiye Beyza Sarıkaya",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-graphql": "^0.12.0",
+    "graphql": "^16.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
