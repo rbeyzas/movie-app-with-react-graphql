@@ -1,11 +1,7 @@
 const graphql = require('graphql');
 const _ = require('lodash');
-// lodash: array ve objelerde her türlü işlem yapılabiliyor. arama değiştirme gibi işlemler hızlı bir şekilde yapılıyor
-// lodash ile ilgili daha fazla bilgi için: https://lodash.com/docs/4.17.15
 
 const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema, GraphQLID } = graphql;
-// sorgu atarken movie(id:"1") olan dataya erişmek istediğimizde eğer
-// id: { type: GraphQLID }, demezsek hata alırız.
 
 //dummy data
 const directors = [
@@ -57,6 +53,13 @@ const MovieType = new GraphQLObjectType({
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     year: { type: GraphQLInt },
+    director: {
+      type: DirectorType,
+      resolve(parent, args) {
+        // console.log(parent)
+        return _.find(directors, { id: parent.id });
+      },
+    },
   }),
 });
 
@@ -93,3 +96,10 @@ const RootQuery = new GraphQLObjectType({
 module.exports = new GraphQLSchema({
   query: RootQuery,
 });
+// lodash: array ve objelerde her türlü işlem yapılabiliyor. arama değiştirme gibi işlemler hızlı bir şekilde yapılıyor
+// lodash ile ilgili daha fazla bilgi için: https://lodash.com/docs/4.17.15
+// sorgu atarken movie(id:"1") olan dataya erişmek istediğimizde eğer id: { type: GraphQLID }, demezsek hata alırız.
+// MovieType içerisinde parent'ı konsolladığım zaman almka istediğim verinin tamamını gösterir. yani gelen veri parent içerisine yazılır.
+// mesela movie id'si 1 olan datayı almak istediğimde o movieyi  bana getirir. movie üzerinde direktör de tnaımlı olduğu için direktöre de ulaşabiliriz.
+// parent içerisinde bize ne resolve oluyorsa o gelir.
+// mesela movie içerisinde yapmışsak movie'nin root query'sinde resolve içerisinde yazan fonksiyon neyse parent odur.
