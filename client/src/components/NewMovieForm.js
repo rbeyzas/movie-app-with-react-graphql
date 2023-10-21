@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { getDirectorsQuery } from '../queries/DirectorsList';
+import { gql, useQuery, useMutation } from '@apollo/client';
+import { getDirectorsQuery } from '../queries/Directors';
+import { newMoviesMutation } from '../mutations/Movies';
 
 const NewMovieForm = () => {
   const [state, setState] = useState({
@@ -15,14 +16,23 @@ const NewMovieForm = () => {
       [e.target.name]: e.target.value,
     }));
   };
-  const { loading, error, data } = useQuery(getDirectorsQuery);
+  const { loading: queryLoading, error: queryError, data } = useQuery(getDirectorsQuery);
+  const [addMovie, { loading, error }] = useMutation(newMoviesMutation);
 
-  if (loading) return <option disabled={true}>Loading...</option>;
-  if (error) return <option disabled={true}>Error</option>;
-
+  const onSubmit = (e) => {
+    e.preventDefault();
+    addMovie({
+      variables: {
+        title: state.title,
+        description: state.description,
+        year: parseInt(state.year),
+        directorId: state.directorId,
+      },
+    });
+  };
   return (
     <div>
-      <form>
+      <form onSubmit={onSubmit}>
         <div>
           <label>Title</label>
           <input type="text" name="title" onChange={onChange} placeholder="Title" />
@@ -39,8 +49,8 @@ const NewMovieForm = () => {
           <label>Director</label>
           <select name="directorId" onChange={onChange}>
             <option disabled={true}>Choose Director</option>
-            {loading && <option disabled={true}>Loading...</option>}
-            {error && <option disabled={true}>Error.</option>}
+            {queryLoading && <option disabled={true}>Loading...</option>}
+            {queryError && <option disabled={true}>Error.</option>}
             {data &&
               data.directors.map(({ id, name }) => (
                 <option key={id} value={id}>

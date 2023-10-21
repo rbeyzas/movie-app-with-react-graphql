@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { getMoviesQuery } from '../queries/MoviesList';
+import { getMoviesQuery } from '../queries/Movies';
 
 const MovieList = () => {
   const { loading, error, data } = useQuery(getMoviesQuery);
