@@ -8,8 +8,6 @@ const Director = require('../models/Director');
 const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema, GraphQLID, GraphQLList } =
   graphql;
 
-//dummy data
-
 const MovieType = new GraphQLObjectType({
   name: 'Movie',
   fields: () => ({
@@ -76,8 +74,34 @@ const RootQuery = new GraphQLObjectType({
   },
 });
 
+const Mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    addMovie: {
+      type: MovieType,
+      args: {
+        title: { type: GraphQLString },
+        description: { type: GraphQLString },
+        year: { type: GraphQLInt },
+        directorId: { type: GraphQLID },
+      },
+      resolve(parent, args) {
+        const movie = new Movie({
+          title: args.title,
+          description: args.description,
+          year: args.year,
+          directorId: args.directorId,
+        });
+        return movie.save();
+      },
+    },
+  },
+});
+// fields içerisine kullanacağımız mutationları yazdık.
+// args içerisine kaydetmek istediklerimizi yazacağız.
 module.exports = new GraphQLSchema({
   query: RootQuery,
+  mutation: Mutation,
 });
 
 // lodash: array ve objelerde her türlü işlem yapılabiliyor. arama değiştirme gibi işlemler hızlı bir şekilde yapılıyor
@@ -98,3 +122,5 @@ module.exports = new GraphQLSchema({
 //     return movies; // Tüm filmleri döndür
 //   },
 // },
+
+// CRUD işlemleri için mutation kullanılır.
