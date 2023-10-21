@@ -5,8 +5,15 @@ const _ = require('lodash');
 const Movie = require('../models/Movie');
 const Director = require('../models/Director');
 
-const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema, GraphQLID, GraphQLList } =
-  graphql;
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLSchema,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+} = graphql;
 
 const MovieType = new GraphQLObjectType({
   name: 'Movie',
@@ -19,7 +26,9 @@ const MovieType = new GraphQLObjectType({
       type: DirectorType,
       resolve(parent, args) {
         // console.log(parent)
-        return _.find(directors, { id: parent.id });
+        // dummy data kullanırken:
+        //return _.find(directors, { id: parent.id });
+        return Director.findById(parent.directorId);
       },
     },
   }),
@@ -34,8 +43,10 @@ const DirectorType = new GraphQLObjectType({
     movies: {
       type: new GraphQLList(MovieType),
       resolve(parent, args) {
-        return _.filter(movies, { directorId: parent.id });
+        // dummy data kullanırken:
+        //return _.filter(movies, { directorId: parent.id });
         // filter metodu kullanmamızın sebebi tek bir data aramıyoruz. find ile 1 data bulunur ve sonrakilere bakılmaz.
+        return Movie.find({ directorId: parent.id });
       },
     },
   }),
@@ -49,26 +60,36 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         // code to get data from db / other source
-        return _.find(movies, { id: args.id });
+        // dummy data kullanırken:
+        // return _.find(movies, { id: args.id });
+        return Movie.findById(args.id);
       },
     },
     director: {
       type: DirectorType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return _.find(directors, { id: args.id });
+        // dummy data kullanırken:
+        // return _.find(directors, { id: args.id });
+        return Director.findById(args.id);
       },
     },
     movies: {
       type: new GraphQLList(MovieType),
       resolve(parent, args) {
-        return movies;
+        // dummy data kullanırken:
+        // return movies;
+        return Movie.find({});
+        //ne kadar data varsa hepsini dön
       },
     },
     directors: {
       type: new GraphQLList(DirectorType),
       resolve(parent, args) {
-        return directors;
+        // dummy data kullanırken:
+        // return directors;
+        return Director.find({});
+        //ne kadar data varsa hepsini dön
       },
     },
   },
@@ -80,10 +101,10 @@ const Mutation = new GraphQLObjectType({
     addMovie: {
       type: MovieType,
       args: {
-        title: { type: GraphQLString },
+        title: { type: new GraphQLNonNull(GraphQLString) },
         description: { type: GraphQLString },
-        year: { type: GraphQLInt },
-        directorId: { type: GraphQLID },
+        year: { type: new GraphQLNonNull(GraphQLInt) },
+        directorId: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args) {
         const movie = new Movie({
@@ -93,6 +114,20 @@ const Mutation = new GraphQLObjectType({
           directorId: args.directorId,
         });
         return movie.save();
+      },
+    },
+    addDirector: {
+      type: DirectorType,
+      args: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        birth: { type: GraphQLInt },
+      },
+      resolve(parent, args) {
+        const director = new Director({
+          name: args.name,
+          birth: args.birth,
+        });
+        return director.save();
       },
     },
   },
@@ -124,3 +159,4 @@ module.exports = new GraphQLSchema({
 // },
 
 // CRUD işlemleri için mutation kullanılır.
+// GraphQLNonNull: girilmesi zorunlu olan alanları belitrledik.
