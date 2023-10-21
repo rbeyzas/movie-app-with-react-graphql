@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { getDirectorsQuery } from '../queries/Directors';
 import { newMoviesMutation } from '../mutations/Movies';
+import { getMoviesQuery } from '../queries/Movies';
 
 const NewMovieForm = () => {
   const [state, setState] = useState({
     title: '',
     description: '',
-    year: null,
+    year: '',
     directorId: '',
   });
   const onChange = (e) => {
@@ -25,9 +26,10 @@ const NewMovieForm = () => {
       variables: {
         title: state.title,
         description: state.description,
-        year: parseInt(state.year),
+        year: parseInt(state.year, 10),
         directorId: state.directorId,
       },
+      refetchQueries: [{ query: getMoviesQuery }],
     });
   };
   return (
