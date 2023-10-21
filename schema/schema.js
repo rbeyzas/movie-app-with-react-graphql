@@ -1,9 +1,31 @@
 const graphql = require('graphql');
 const _ = require('lodash');
+// lodash: array ve objelerde her türlü işlem yapılabiliyor. arama değiştirme gibi işlemler hızlı bir şekilde yapılıyor
+// lodash ile ilgili daha fazla bilgi için: https://lodash.com/docs/4.17.15
 
-const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema, GraphQLID } = graphql;
+// sorgu atarken movie(id:"1") olan dataya erişmek istediğimizde eğer
+// id: { type: GraphQLID }, demezsek hata alırız.
 
 //dummy data
+const directors = [
+  {
+    id: '1',
+    name: 'Francis Ford Coppola',
+    birth: 1939,
+  },
+  {
+    id: '2',
+    name: 'Quentin Tarantino',
+    birth: 1963,
+  },
+  {
+    id: '3',
+    name: 'Brian De Palma',
+    birth: 1940,
+  },
+];
+
 const movies = [
   {
     id: '1',
@@ -31,10 +53,19 @@ const movies = [
 const MovieType = new GraphQLObjectType({
   name: 'Movie',
   fields: () => ({
-    id: { type: GraphQLString },
+    id: { type: GraphQLID },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     year: { type: GraphQLInt },
+  }),
+});
+
+const DirectorType = new GraphQLObjectType({
+  name: 'Director',
+  fields: () => ({
+    id: { type: GraphQLID },
+    name: { type: GraphQLString },
+    birth: { type: GraphQLInt },
   }),
 });
 
@@ -43,10 +74,17 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     movie: {
       type: MovieType,
-      args: { id: { type: GraphQLString } },
+      args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         // code to get data from db / other source
         return _.find(movies, { id: args.id });
+      },
+    },
+    director: {
+      type: DirectorType,
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        return _.find(directors, { id: args.id });
       },
     },
   },
