@@ -4,7 +4,8 @@ const { graphqlHTTP } = require('express-graphql');
 const schema = require('./schema/schema');
 
 const app = express();
-
+require('dotenv').config();
+const db = require('./helpers/db.js')();
 app.use(
   '/graphql',
   graphqlHTTP({
