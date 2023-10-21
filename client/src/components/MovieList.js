@@ -15,11 +15,11 @@ const MovieList = () => {
     data: movieData,
   } = useQuery(getMovieQuery, {
     skip: !activeId,
-    variables: { id: activeId },
+    variables: { id: String(activeId) },
   });
 
   const showModal = (id) => {
-    setActiveId(id);
+    setActiveId(String(id));
     setVisible(true);
   };
 

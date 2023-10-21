@@ -18,7 +18,7 @@ const {
 const MovieType = new GraphQLObjectType({
   name: 'Movie',
   fields: () => ({
-    id: { type: GraphQLID },
+    id: { type: GraphQLString },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
     year: { type: GraphQLInt },
@@ -57,7 +57,7 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     movie: {
       type: MovieType,
-      args: { id: { type: GraphQLID } },
+      args: { id: { type: GraphQLString } },
       resolve(parent, args) {
         // code to get data from db / other source
         // dummy data kullanırken:
