@@ -1,24 +1,75 @@
-import React from 'react';
+import React, { useState } from 'react';
+import 'antd/dist/antd';
 import { useQuery } from '@apollo/client';
-import { getMoviesQuery } from '../queries/Movies';
+import { getMoviesQuery, getMovieQuery } from '../queries/Movies';
+import { Button, Modal } from 'antd';
 
 const MovieList = () => {
-  const { loading, error, data } = useQuery(getMoviesQuery);
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error</p>;
-  //   console.log(data);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [activeId, setActiveId] = useState('');
+  const { loading: loadingMovies, error: errorMovies, data: moviesData } = useQuery(getMoviesQuery);
+  const {
+    loading: loadingMovie,
+    error: errorMovie,
+    data: movieData,
+  } = useQuery(getMovieQuery, {
+    skip: !activeId,
+    variables: { id: activeId },
+  });
+
+  const showModal = (id) => {
+    setActiveId(id);
+    setVisible(true);
+  };
+
+  const handleOk = () => {
+    setVisible(false);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
 
   return (
-    <div>
-      <ul className="movie-list">
-        {data.movies.map((movie, index) => (
-          <li key={index}>
-            <h2>{movie.title}</h2>
-            <p>{movie.description}</p>
-            <p>{movie.id}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="container" data-state="Movie App">
+      <Modal
+        title="Basic Modal"
+        open={visible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="submit" type="primary" onClick={handleOk}>
+            OK
+          </Button>,
+        ]}
+      >
+        <div>
+          {loadingMovie && <div>Loading...</div>}
+          {errorMovie && <div>Error</div>}
+          {movieData && (
+            <div>
+              <p>{movieData.movie.description}</p>
+            </div>
+          )}
+        </div>
+      </Modal>
+
+      <div className="device" data-view="list">
+        <ul className="movie-list layer" data-layer="list">
+          {loadingMovies && <div>Loading...</div>}
+          {errorMovies && <div>Error.</div>}
+          {moviesData &&
+            moviesData.movies.map(({ id, title, description }) => (
+              <li className="content" key={id} onClick={() => showModal(id)}>
+                <div className="bg"></div>
+                <div className="avatar"></div>
+                <div className="title">{title}</div>
+                <p>{description}</p>
+              </li>
+            ))}
+        </ul>
+      </div>
     </div>
   );
 };

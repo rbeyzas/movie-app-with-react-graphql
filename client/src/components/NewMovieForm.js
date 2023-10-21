@@ -17,10 +17,19 @@ const NewMovieForm = () => {
       [e.target.name]: e.target.value,
     }));
   };
-  const { loading: queryLoading, error: queryError, data } = useQuery(getDirectorsQuery);
-  const [addMovie, { loading, error }] = useMutation(newMoviesMutation);
+  const {
+    loading: directorsLoading,
+    error: directorsError,
+    data: directorsData,
+  } = useQuery(getDirectorsQuery);
+  const [addMovie, { loading: mutationLoading, error: mutationError }] = useMutation(
+    newMoviesMutation,
+    {
+      refetchQueries: [{ query: getMoviesQuery }],
+    },
+  );
 
-  const onSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     addMovie({
       variables: {
@@ -29,42 +38,41 @@ const NewMovieForm = () => {
         year: parseInt(state.year, 10),
         directorId: state.directorId,
       },
-      refetchQueries: [{ query: getMoviesQuery }],
     });
   };
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <div>
-          <label>Title</label>
-          <input type="text" name="title" onChange={onChange} placeholder="Title" />
-        </div>
-        <div>
-          <label>Description</label>
-          <textarea name="description" onChange={onChange} placeholder="Description" />
-        </div>
-        <div>
-          <label>Year</label>
-          <input type="text" name="year" onChange={onChange} placeholder="Year" />
-        </div>
-        <div>
-          <label>Director</label>
-          <select name="directorId" onChange={onChange}>
-            <option disabled={true}>Choose Director</option>
-            {queryLoading && <option disabled={true}>Loading...</option>}
-            {queryError && <option disabled={true}>Error.</option>}
-            {data &&
-              data.directors.map(({ id, name }) => (
-                <option key={id} value={id}>
-                  {name}
-                </option>
-              ))}
-          </select>
-        </div>
-        <div>
-          <button type="submit">Submit</button>
-        </div>
-      </form>
+    <div className="container" data-state="New Movie">
+      <div className="device" data-view="list">
+        <form onSubmit={handleSubmit}>
+          <div>
+            <input type="text" name="title" onChange={onChange} placeholder="Title" />
+          </div>
+          <div>
+            <textarea name="description" onChange={onChange} placeholder="Description" />
+          </div>
+          <div>
+            <input type="text" name="year" onChange={onChange} placeholder="Year" />
+          </div>
+          <div>
+            <select name="directorId" onChange={onChange}>
+              <option disabled={true}>Choose Director</option>
+              {directorsLoading && <option disabled={true}>Loading...</option>}
+              {directorsError && <option disabled={true}>Error.</option>}
+              {directorsData &&
+                directorsData.directors.map(({ id, name }) => (
+                  <option key={id} value={id}>
+                    {name}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div>
+            <button type="submit">Submit</button>
+          </div>
+        </form>
+      </div>
+      {mutationLoading && <div>Loading...</div>}
+      {mutationError && <div>Error!</div>}
     </div>
   );
 };

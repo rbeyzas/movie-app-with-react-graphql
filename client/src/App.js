@@ -15,8 +15,8 @@ const App = () => {
   return (
     <ApolloProvider client={client}>
       <div className="App">
-        <MovieList />
         <NewMovieForm />
+        <MovieList />
       </div>
     </ApolloProvider>
   );
