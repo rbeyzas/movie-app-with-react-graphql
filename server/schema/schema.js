@@ -37,7 +37,7 @@ const MovieType = new GraphQLObjectType({
 const DirectorType = new GraphQLObjectType({
   name: 'Director',
   fields: () => ({
-    id: { type: GraphQLID },
+    id: { type: GraphQLString },
     name: { type: GraphQLString },
     birth: { type: GraphQLInt },
     movies: {
@@ -104,7 +104,7 @@ const Mutation = new GraphQLObjectType({
         title: { type: new GraphQLNonNull(GraphQLString) },
         description: { type: GraphQLString },
         year: { type: new GraphQLNonNull(GraphQLInt) },
-        directorId: { type: new GraphQLNonNull(GraphQLID) },
+        directorId: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args) {
         const movie = new Movie({

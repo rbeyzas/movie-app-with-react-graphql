@@ -1,42 +1,43 @@
 import React, { useState } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { getDirectorsQuery } from '../queries/Directors';
-import { newMoviesMutation } from '../mutations/Movies';
+import { newMovieMutation } from '../mutations/Movies';
 import { getMoviesQuery } from '../queries/Movies';
 
 const NewMovieForm = () => {
-  const [state, setState] = useState({
+  const [formData, setFormData] = useState({
     title: '',
     description: '',
     year: '',
     directorId: '',
   });
-  const onChange = (e) => {
-    setState((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
+
   const {
-    loading: directorsLoading,
-    error: directorsError,
     data: directorsData,
+    loading: loadingDirectors,
+    error: errorDirectors,
   } = useQuery(getDirectorsQuery);
+
   const [addMovie, { loading: mutationLoading, error: mutationError }] = useMutation(
-    newMoviesMutation,
+    newMovieMutation,
     {
       refetchQueries: [{ query: getMoviesQuery }],
     },
   );
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    e.target.reset();
     addMovie({
       variables: {
-        title: state.title,
-        description: state.description,
-        year: parseInt(state.year, 10),
-        directorId: state.directorId,
+        title: formData.title,
+        description: formData.description,
+        year: parseInt(formData.year, 10),
+        directorId: formData.directorId,
       },
     });
   };
@@ -45,25 +46,28 @@ const NewMovieForm = () => {
       <div className="device" data-view="list">
         <form onSubmit={handleSubmit}>
           <div>
-            <input type="text" name="title" onChange={onChange} placeholder="Title" />
+            <input type="text" name="title" onChange={handleChange} placeholder="Title" />
           </div>
           <div>
-            <textarea name="description" onChange={onChange} placeholder="Description" />
+            <textarea name="description" onChange={handleChange} placeholder="Description" />
           </div>
           <div>
-            <input type="text" name="year" onChange={onChange} placeholder="Year" />
+            <input type="text" name="year" onChange={handleChange} placeholder="Year" />
           </div>
           <div>
-            <select name="directorId" onChange={onChange}>
-              <option disabled={true}>Choose Director</option>
-              {directorsLoading && <option disabled={true}>Loading...</option>}
-              {directorsError && <option disabled={true}>Error.</option>}
-              {directorsData &&
+            <select name="directorId" onChange={handleChange}>
+              <option disabled>Choose Director</option>
+              {loadingDirectors ? (
+                <option disabled>Loading...</option>
+              ) : errorDirectors ? (
+                <option disabled>Error.</option>
+              ) : (
                 directorsData.directors.map(({ id, name }) => (
                   <option key={id} value={id}>
                     {name}
                   </option>
-                ))}
+                ))
+              )}
             </select>
           </div>
           <div>
