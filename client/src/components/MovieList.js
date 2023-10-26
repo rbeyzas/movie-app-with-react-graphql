@@ -34,7 +34,7 @@ const MovieList = () => {
   return (
     <div className="container" data-state="Movie App">
       <Modal
-        title="Basic Modal"
+        title="Detail"
         open={visible}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -49,7 +49,14 @@ const MovieList = () => {
           {errorMovie && <div>Error</div>}
           {movieData && (
             <div>
+              <h3>{movieData.movie.title}</h3>
+              <p>{movieData.movie.year}</p>
               <p>{movieData.movie.description}</p>
+              <h4>{movieData.movie.director.name}</h4>
+              <h4>Yönetmenin filmleri:</h4>
+              {movieData.movie.director.movies.map((movie) => (
+                <div>{movie.title}</div>
+              ))}
             </div>
           )}
         </div>
