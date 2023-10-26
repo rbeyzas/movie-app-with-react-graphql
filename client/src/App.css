@@ -169,6 +169,20 @@ p {
   margin-bottom: 0.5rem;
   font-family: monospace;
 }
+.director-list li {
+  -webkit-transform: translateY(0%);
+  transform: translateY(0%);
+  transition: -webkit-transform 400ms ease;
+  transition: transform 400ms ease;
+  transition: transform 400ms ease, -webkit-transform 400ms ease;
+  display: block !important;
+}
+
+.director-list li > .title {
+  margin: 0 !important;
+  padding: 0.6rem;
+  grid-column: none !important;
+}
 
 /* ---------------------------------- */
 .article .avatar {

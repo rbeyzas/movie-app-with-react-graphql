@@ -54,9 +54,14 @@ const MovieList = () => {
               <p>{movieData.movie.description}</p>
               <h4>{movieData.movie.director.name}</h4>
               <h4>Yönetmenin filmleri:</h4>
-              {movieData.movie.director.movies.map((movie) => (
-                <div>{movie.title}</div>
-              ))}
+              <ul className="director-list">
+                {movieData.movie.director.movies.map((movie) => (
+                  <li key={movie.id}>
+                    <div className="bg"></div>
+                    <div className="title">{movie.title}</div>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
